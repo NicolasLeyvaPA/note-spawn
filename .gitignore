@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.wav
+notes/
+lecture-notes-v2/
+.claude/
+.env
+venv/
+*.ipynb
+*.pdf
+lecture_*.md
+transcript_*.md
+metadata.json
