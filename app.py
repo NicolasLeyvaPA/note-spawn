@@ -1597,6 +1597,11 @@ def recording_loop(class_id, title, chunk_duration, device_id, model_size, lectu
                 if audio is None or len(audio) == 0:
                     continue
 
+                # Skip silent or near-silent audio chunks
+                if np.max(np.abs(audio)) < 0.001:
+                    logger.info("Skipping silent audio chunk")
+                    continue
+
                 # Save audio to temp file
                 temp_path = None
                 try:
