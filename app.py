@@ -83,6 +83,9 @@ WHISPER_FP16 = False  # Set True if you have a CUDA GPU
 OLLAMA_API_URL = os.getenv('OLLAMA_API_URL', 'http://localhost:11434')
 OLLAMA_MODEL = os.getenv('OLLAMA_MODEL', 'llama3.2')
 
+# Transcription thresholds
+MIN_TRANSCRIPT_LENGTH = 10  # Minimum chars to consider a valid transcript
+
 # State
 recorder = None
 session_active = False
@@ -1590,7 +1593,7 @@ def recording_loop(class_id, title, chunk_duration, device_id, model_size, lectu
                         except:
                             pass
 
-                if not text or len(text.strip()) < 10:
+                if not text or len(text.strip()) < MIN_TRANSCRIPT_LENGTH:
                     socketio.emit('status', {'message': 'No speech detected...', 'recording': True})
                     continue
 
