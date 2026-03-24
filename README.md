@@ -105,6 +105,17 @@ Open **http://localhost:5000** in your browser.
 - Without an API key, NoteSpawn still transcribes everything — it just skips AI enhancement
 - Notes are saved to `./notes/` as Markdown files
 
+## Contributing
+
+Contributions are welcome. To get started:
+
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feature/your-idea`)
+3. Commit your changes
+4. Push and open a pull request
+
+If you find a bug or have a feature idea, open an issue.
+
 ## License
 
 MIT
