@@ -74,6 +74,11 @@ SAMPLE_RATE = 16000       # Hz — required by Whisper
 AUDIO_CHANNELS = 1        # Mono recording
 AUDIO_BLOCK_DURATION = 0.5  # Seconds per audio callback block
 
+# Whisper configuration
+DEFAULT_WHISPER_MODEL = os.getenv('WHISPER_MODEL', 'base')
+WHISPER_LANGUAGE = 'en'
+WHISPER_FP16 = False  # Set True if you have a CUDA GPU
+
 # State
 recorder = None
 session_active = False
@@ -88,7 +93,7 @@ whisper_loading = False
 warm_recorder = None
 warm_device_id = None
 warm_recorder_lock = threading.Lock()
-default_model_size = 'base'
+default_model_size = DEFAULT_WHISPER_MODEL
 
 import time  # For performance timing
 
@@ -1472,7 +1477,7 @@ def load_whisper(model_size):
     return whisper_model
 
 def transcribe(path):
-    result = whisper_model.transcribe(path, language="en", fp16=False, verbose=False)
+    result = whisper_model.transcribe(path, language=WHISPER_LANGUAGE, fp16=WHISPER_FP16, verbose=False)
     return result["text"].strip()
 
 def enhance(text):
