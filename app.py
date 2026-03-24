@@ -58,7 +58,7 @@ except ImportError:
 
 try:
     import urllib.request
-    req = urllib.request.Request("http://localhost:11434/api/tags")
+    req = urllib.request.Request(f"{OLLAMA_API_URL}/api/tags")
     urllib.request.urlopen(req, timeout=2)
     ollama_available = True
     logger.info("Ollama connected (free local AI)")
@@ -78,6 +78,10 @@ AUDIO_BLOCK_DURATION = 0.5  # Seconds per audio callback block
 DEFAULT_WHISPER_MODEL = os.getenv('WHISPER_MODEL', 'base')
 WHISPER_LANGUAGE = 'en'
 WHISPER_FP16 = False  # Set True if you have a CUDA GPU
+
+# Ollama configuration
+OLLAMA_API_URL = os.getenv('OLLAMA_API_URL', 'http://localhost:11434')
+OLLAMA_MODEL = os.getenv('OLLAMA_MODEL', 'llama3.2')
 
 # State
 recorder = None
@@ -1452,12 +1456,12 @@ session_mgr = SessionManager()
 
 
 # ============== AI FUNCTIONS ==============
-def ollama_generate(prompt, model="llama3.2"):
+def ollama_generate(prompt, model=OLLAMA_MODEL):
     import urllib.request
     import json as json_lib
     try:
         data = json_lib.dumps({"model": model, "prompt": prompt, "stream": False}).encode('utf-8')
-        req = urllib.request.Request("http://localhost:11434/api/generate", data=data, headers={"Content-Type": "application/json"})
+        req = urllib.request.Request(f"{OLLAMA_API_URL}/api/generate", data=data, headers={"Content-Type": "application/json"})
         with urllib.request.urlopen(req, timeout=120) as resp:
             return json_lib.loads(resp.read().decode('utf-8')).get("response", "")
     except Exception as e:
