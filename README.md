@@ -8,7 +8,7 @@
 
 ## Why I Built This
 
-Halfway through my 3rd year of Computer Science, I noticed something — the students who looked the most "focused" in lecture were really just focused on writing things down. Heads down, scribbling non-stop, trying to capture every word. They weren't actually *thinking* about what the professor was saying. Neither was I.
+Halfway through my 3rd year of Computer Science, I noticed something — the students who looked the most "focused" in lecture were really just focused on writing things down. Heads down, scribbling or typing non-stop, trying to capture every word. They weren't actually *thinking* about what the professor was saying. Neither was I.
 
 You can't deeply engage with a concept and transcribe it at the same time. Your brain has to pick one. So I built NoteSpawn to handle the transcription part, so I could finally just sit there, listen, and actually understand.
 
