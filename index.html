@@ -736,6 +736,18 @@
             socket.emit('stop_recording');
         });
         
+        // Keyboard shortcut: Space to toggle recording
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !e.target.matches('input, textarea, select')) {
+                e.preventDefault();
+                if (isRecording) {
+                    stopBtn.click();
+                } else {
+                    startBtn.click();
+                }
+            }
+        });
+
         // Disable controls while recording
         function updateControls() {
             deviceSelect.disabled = isRecording;
