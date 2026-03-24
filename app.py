@@ -8,16 +8,25 @@ import os
 import sys
 import wave
 import queue
+import logging
 import tempfile
 import threading
 import json
 from datetime import datetime
 from pathlib import Path
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(message)s',
+    datefmt='%H:%M:%S'
+)
+logger = logging.getLogger(__name__)
+
 script_dir = Path(__file__).parent.resolve()
 os.chdir(script_dir)
 
-print("Starting Lecture Notes AI...")
+logger.info("Starting Lecture Notes AI...")
 
 def install(package):
     import subprocess
@@ -28,7 +37,7 @@ for module, package in [("flask", "flask"), ("flask_socketio", "flask-socketio")
     try:
         __import__(module)
     except ImportError:
-        print(f"Installing {package}...")
+        logger.info(f"Installing {package}...")
         install(package)
 
 import numpy as np
@@ -43,18 +52,18 @@ ollama_available = False
 try:
     import whisper as w
     whisper = w
-    print("✓ Whisper available")
+    logger.info("Whisper available")
 except ImportError:
-    print("⚠ Whisper not installed (will install on first use)")
+    logger.warning("Whisper not installed (will install on first use)")
 
 try:
     import urllib.request
     req = urllib.request.Request("http://localhost:11434/api/tags")
     urllib.request.urlopen(req, timeout=2)
     ollama_available = True
-    print("✓ Ollama connected (free local AI)")
+    logger.info("Ollama connected (free local AI)")
 except:
-    print("⚠ Ollama not running - install from ollama.com for free AI enhancement")
+    logger.warning("Ollama not running - install from ollama.com for free AI enhancement")
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'lecture-notes'
@@ -84,17 +93,17 @@ def prewarm_whisper(model_size='base'):
     whisper_loading = True
     try:
         if whisper is None:
-            print("📦 Installing Whisper...")
+            logger.info("Installing Whisper...")
             os.system(f'"{sys.executable}" -m pip install openai-whisper -q')
             import whisper as w
             whisper = w
 
-        print(f"🔄 Pre-loading Whisper model ({model_size})...")
+        logger.info(f"Pre-loading Whisper model ({model_size})...")
         whisper_model = whisper.load_model(model_size)
-        print(f"✓ Whisper model ready ({model_size})")
+        logger.info(f"Whisper model ready ({model_size})")
         whisper_ready.set()
     except Exception as e:
-        print(f"⚠ Whisper pre-load failed: {e}")
+        logger.error(f"Whisper pre-load failed: {e}")
     finally:
         whisper_loading = False
 
@@ -130,10 +139,10 @@ class MetadataManager:
                 # Ensure lectures dict exists
                 if 'lectures' not in data:
                     data['lectures'] = {}
-                print(f"✓ Loaded metadata: {len(data.get('sessions', {}))} sessions, {len(data.get('lectures', {}))} lectures")
+                logger.info(f"Loaded metadata: {len(data.get('sessions', {}))} sessions, {len(data.get('lectures', {}))} lectures")
                 return data
             except Exception as e:
-                print(f"⚠ Metadata corrupted, creating backup: {e}")
+                logger.warning(f"Metadata corrupted, creating backup: {e}")
                 # Backup corrupted file
                 backup = metadata_file.with_suffix('.json.bak')
                 try:
@@ -165,7 +174,7 @@ class MetadataManager:
 
         if migrated > 0:
             self._save()
-            print(f"✓ Migrated {migrated} sessions to lecture containers")
+            logger.info(f"Migrated {migrated} sessions to lecture containers")
     
     def _save(self):
         try:
@@ -174,7 +183,7 @@ class MetadataManager:
             temp_file.write_text(json.dumps(self.data, indent=2), encoding='utf-8')
             temp_file.replace(metadata_file)
         except Exception as e:
-            print(f"✗ Failed to save metadata: {e}")
+            logger.error(f"Failed to save metadata: {e}")
     
     def _sync_with_files(self):
         """Scan for lecture files that aren't in metadata (recovery)"""
@@ -186,7 +195,7 @@ class MetadataManager:
             for f in class_dir.glob("lecture_*.md"):
                 session_id = f.stem.replace("lecture_", "")
                 if session_id not in self.data["sessions"]:
-                    print(f"  → Found orphaned session: {session_id} in {c['id']}")
+                    logger.info(f"Found orphaned session: {session_id} in {c['id']}")
                     # Extract title from file
                     try:
                         content = f.read_text(encoding='utf-8')
@@ -208,7 +217,7 @@ class MetadataManager:
                         pass
         if found_new:
             self._save()
-            print(f"✓ Recovered orphaned sessions")
+            logger.info("Recovered orphaned sessions")
     
     def get_session(self, session_id):
         return self.data["sessions"].get(session_id, {})
@@ -1234,7 +1243,7 @@ class AudioRecorder:
         self.stream = None
 
     def callback(self, indata, frames, time_info, status):
-        if status: print(f"Audio: {status}")
+        if status: logger.warning(f"Audio: {status}")
         self.audio_queue.put(indata.copy())
 
     def start(self):
@@ -1325,11 +1334,11 @@ class SessionManager:
             if lecture_id:
                 metadata_mgr.add_session_to_lecture(lecture_id, self.session_id)
 
-            print(f"✓ Session started: {self.session_id} in {class_id}" +
+            logger.info(f"Session started: {self.session_id} in {class_id}" +
                   (f" (lecture: {lecture_id})" if lecture_id else ""))
             return self.session_id
         except Exception as e:
-            print(f"✗ Error starting session: {e}")
+            logger.error(f"Error starting session: {e}")
             return None
 
     def add_chunk(self, transcript, enhanced):
@@ -1362,11 +1371,11 @@ class SessionManager:
                 last_update=datetime.now().isoformat()
             )
             
-            print(f"  ✓ Chunk {self.chunk_count} saved")
+            logger.info(f"Chunk {self.chunk_count} saved")
             return True
             
         except Exception as e:
-            print(f"  ✗ Error saving chunk {self.chunk_count}: {e}")
+            logger.error(f"Error saving chunk {self.chunk_count}: {e}")
             # Emergency backup to temp file
             try:
                 backup_path = notes_dir / f"_backup_{self.session_id}_{self.chunk_count}.txt"
@@ -1374,7 +1383,7 @@ class SessionManager:
                     f.write(f"BACKUP - Chunk {self.chunk_count}\n")
                     f.write(f"Transcript: {transcript}\n\n")
                     f.write(f"Enhanced: {enhanced}\n")
-                print(f"  ⚠ Backup saved to {backup_path}")
+                logger.warning(f"Backup saved to {backup_path}")
             except:
                 pass
             return False
@@ -1421,11 +1430,11 @@ class SessionManager:
                 completed_at=datetime.now().isoformat()
             )
             
-            print(f"✓ Session finalized: {self.chunk_count} chunks, {word_count} words, {duration_mins} min")
+            logger.info(f"Session finalized: {self.chunk_count} chunks, {word_count} words, {duration_mins} min")
             return True
             
         except Exception as e:
-            print(f"✗ Error finalizing session: {e}")
+            logger.error(f"Error finalizing session: {e}")
             return False
 
 
@@ -1442,7 +1451,7 @@ def ollama_generate(prompt, model="llama3.2"):
         with urllib.request.urlopen(req, timeout=120) as resp:
             return json_lib.loads(resp.read().decode('utf-8')).get("response", "")
     except Exception as e:
-        print(f"Ollama error: {e}")
+        logger.error(f"Ollama error: {e}")
         return None
 
 def load_whisper(model_size):
@@ -1577,14 +1586,14 @@ def recording_loop(class_id, title, chunk_duration, device_id, model_size, lectu
                 try:
                     enhanced = enhance(text)
                 except Exception as e:
-                    print(f"Enhancement failed: {e}")
+                    logger.error(f"Enhancement failed: {e}")
                     enhanced = f"**Raw Transcript:**\n\n{text}"
                 
                 session_mgr.add_chunk(text, enhanced)
                 socketio.emit('notes', {'chunk': session_mgr.chunk_count, 'content': enhanced})
                 
             except Exception as e:
-                print(f"Error in recording loop iteration: {e}")
+                logger.error(f"Error in recording loop iteration: {e}")
                 socketio.emit('status', {'message': f'Error: {str(e)[:50]}...', 'recording': True})
                 continue
 
@@ -1595,7 +1604,7 @@ def recording_loop(class_id, title, chunk_duration, device_id, model_size, lectu
         try:
             summary = summarize(session_mgr.notes)
         except Exception as e:
-            print(f"Summary generation failed: {e}")
+            logger.error(f"Summary generation failed: {e}")
             summary = ""
         
         session_mgr.finalize(summary)
@@ -1607,7 +1616,7 @@ def recording_loop(class_id, title, chunk_duration, device_id, model_size, lectu
         socketio.emit('status', {'message': 'Done', 'recording': False})
         
     except Exception as e:
-        print(f"Critical error in recording: {e}")
+        logger.critical(f"Recording failed: {e}")
         socketio.emit('error', {'message': f'Recording failed: {str(e)}'})
         socketio.emit('status', {'message': 'Error - recording stopped', 'recording': False})
         session_active = False
@@ -1616,7 +1625,7 @@ def recording_loop(class_id, title, chunk_duration, device_id, model_size, lectu
         if session_mgr.chunk_count > 0:
             try:
                 session_mgr.finalize("")
-                print("Emergency save completed")
+                logger.info("Emergency save completed")
             except:
                 pass
 
@@ -1846,13 +1855,12 @@ def on_warm_device(data):
 
 # ============== MAIN ==============
 if __name__ == '__main__':
-    print("\n" + "="*50)
-    print("🎓 LECTURE NOTES AI")
-    print("="*50)
-    print("Open http://localhost:5000")
+    logger.info("=" * 50)
+    logger.info("LECTURE NOTES AI")
+    logger.info("=" * 50)
+    logger.info("Open http://localhost:5000")
     if not ollama_available:
-        print("\n⚠️  For FREE AI enhancement:")
-        print("   1. Install from https://ollama.com")
-        print("   2. Run: ollama pull llama3.2")
-    print("\n")
+        logger.info("For FREE AI enhancement:")
+        logger.info("  1. Install from https://ollama.com")
+        logger.info("  2. Run: ollama pull llama3.2")
     socketio.run(app, host='0.0.0.0', port=5000, debug=False, allow_unsafe_werkzeug=True)
