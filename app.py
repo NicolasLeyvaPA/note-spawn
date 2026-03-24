@@ -955,8 +955,10 @@ HTML_PAGE = '''<!DOCTYPE html>
 
         function formatDate(sessionId) {
             try {
+                if (!sessionId || sessionId.length < 13) return sessionId;
                 const y = sessionId.slice(0,4), m = sessionId.slice(4,6), d = sessionId.slice(6,8);
                 const h = sessionId.slice(9,11), min = sessionId.slice(11,13);
+                if (isNaN(+y) || isNaN(+m) || isNaN(+d)) return sessionId;
                 return `${y}-${m}-${d} ${h}:${min}`;
             } catch { return sessionId; }
         }
