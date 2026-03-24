@@ -30,6 +30,9 @@
             --success: #3fb950;
             --danger: #f85149;
             --warning: #d29922;
+            --danger-hover: #ff6b63;
+            --bg-highlight: #1a2332;
+            --bg-highlight-alt: #162029;
         }
 
         body {
@@ -185,7 +188,7 @@
         }
 
         .btn-danger:hover {
-            background: #ff6b63;
+            background: var(--danger-hover);
         }
 
         .btn:disabled {
@@ -366,7 +369,7 @@
         }
 
         .summary-section {
-            background: linear-gradient(135deg, #1a2332 0%, #162029 100%);
+            background: linear-gradient(135deg, var(--bg-highlight) 0%, var(--bg-highlight-alt) 100%);
             border: 1px solid var(--accent);
             border-radius: 12px;
             padding: 24px;
