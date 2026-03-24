@@ -2,8 +2,6 @@
 
 **Stop taking notes. Start paying attention.**
 
-![NoteSpawn](cover-image.png)
-
 ## The Problem
 
 Students spend lectures frantically scribbling notes instead of actually *listening*. You can't fully absorb what a professor is explaining while simultaneously trying to write it all down. Something always gets lost.
