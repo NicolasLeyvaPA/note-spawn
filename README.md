@@ -1,5 +1,9 @@
 # NoteSpawn
 
+[![Python 3.7+](https://img.shields.io/badge/python-3.7%2B-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Flask](https://img.shields.io/badge/flask-3.0%2B-lightgrey.svg)](https://flask.palletsprojects.com/)
+
 **Stop taking notes. Start paying attention.**
 
 ## The Problem
