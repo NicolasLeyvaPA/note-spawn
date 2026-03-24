@@ -1660,6 +1660,15 @@ def get_devices():
             devices.append({'id': i, 'name': d['name'], 'default': i == sd.default.device[0]})
     return jsonify(devices)
 
+@app.route('/health')
+def health_check():
+    return jsonify({
+        'status': 'ok',
+        'whisper_ready': whisper_ready.is_set(),
+        'ollama_available': ollama_available,
+        'recording': session_active,
+    })
+
 @app.route('/api/classes')
 def get_classes():
     return jsonify(CLASSES)
