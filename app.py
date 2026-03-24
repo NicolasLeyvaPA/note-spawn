@@ -1318,6 +1318,15 @@ class AudioRecorder:
 
 # ============== SESSION MANAGER ==============
 class SessionManager:
+    """Manages the lifecycle of a recording session.
+
+    Handles creating session files, appending transcription chunks,
+    and finalizing sessions with summaries and metadata. Each session
+    produces two Markdown files: enhanced notes and raw transcript.
+
+    Session lifecycle: start() -> add_chunk() (repeated) -> finalize()
+    """
+
     def __init__(self):
         self.session_id = None
         self.class_id = None
