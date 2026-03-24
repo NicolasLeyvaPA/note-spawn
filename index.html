@@ -535,7 +535,22 @@
 
     <script>
         const socket = io();
-        
+
+        // Socket.IO event names
+        const EVENTS = {
+            CONNECT: 'connect',
+            DISCONNECT: 'disconnect',
+            STATUS: 'status',
+            SESSION_STARTED: 'session_started',
+            TRANSCRIPT: 'transcript',
+            NOTES: 'notes',
+            SUMMARY: 'summary',
+            SESSION_ENDED: 'session_ended',
+            ERROR: 'error',
+            START_RECORDING: 'start_recording',
+            STOP_RECORDING: 'stop_recording',
+        };
+
         // DOM elements
         const statusDot = document.getElementById('statusDot');
         const statusText = document.getElementById('statusText');
