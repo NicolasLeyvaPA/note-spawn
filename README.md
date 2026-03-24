@@ -6,11 +6,13 @@
 
 **Stop taking notes. Start paying attention.**
 
-## The Problem
+## Why I Built This
 
-Students spend lectures frantically scribbling notes instead of actually *listening*. You can't fully absorb what a professor is explaining while simultaneously trying to write it all down. Something always gets lost.
+Halfway through my 3rd year of Computer Science, I noticed something — the students who looked the most "focused" in lecture were really just focused on writing things down. Heads down, scribbling non-stop, trying to capture every word. They weren't actually *thinking* about what the professor was saying. Neither was I.
 
-## The Solution
+You can't deeply engage with a concept and transcribe it at the same time. Your brain has to pick one. So I built NoteSpawn to handle the transcription part, so I could finally just sit there, listen, and actually understand.
+
+## What It Does
 
 NoteSpawn records your lecture, transcribes it in real-time using OpenAI Whisper (fully offline, on your machine), and optionally uses AI to structure the raw transcript into clean, organized notes. You sit back, engage with the material, ask questions, and walk out with perfect notes you never had to write.
 
