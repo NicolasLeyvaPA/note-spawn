@@ -1252,6 +1252,18 @@ HTML_PAGE = '''<!DOCTYPE html>
 
 # ============== AUDIO RECORDER ==============
 class AudioRecorder:
+    """Records audio from a microphone and provides chunked access for transcription.
+
+    Uses sounddevice for low-latency audio capture with a callback-based
+    architecture. Audio is collected into a thread-safe queue and can be
+    retrieved in fixed-duration chunks for processing by Whisper.
+
+    Args:
+        sample_rate: Recording sample rate in Hz (default: 16000, required by Whisper).
+        channels: Number of audio channels (default: 1 for mono).
+        device: Audio input device ID, or None for system default.
+    """
+
     def __init__(self, sample_rate=SAMPLE_RATE, channels=AUDIO_CHANNELS, device=None):
         self.sample_rate = sample_rate
         self.channels = channels
