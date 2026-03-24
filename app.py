@@ -1339,10 +1339,17 @@ class SessionManager:
         self.chunk_count = 0
         self.start_time = None
 
+    @staticmethod
+    def sanitize_title(title):
+        """Strip HTML tags and limit title length."""
+        import re
+        clean = re.sub(r'<[^>]+>', '', title)
+        return clean[:255].strip() or 'Untitled Session'
+
     def start(self, class_id, title, lecture_id=None):
         self.session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
         self.class_id = class_id
-        self.title = title
+        self.title = self.sanitize_title(title)
         self.lecture_id = lecture_id
         self.notes = []
         self.transcripts = []
