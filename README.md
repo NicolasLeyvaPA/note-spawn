@@ -17,13 +17,11 @@ NoteSpawn records your lecture, transcribes it in real-time using OpenAI Whisper
 ## How It Works
 
 ```
-Lecture audio  -->  Whisper (local, offline)  -->  Raw transcript
-                                                        |
-                                                   AI enhancement
-                                                   (Claude / Ollama)
-                                                        |
-                                                  Structured notes
-                                                  saved as Markdown
+Browser (UI)  <-- Socket.IO -->  Flask Server  <-- Whisper -->  Transcription
+                                      |
+                                      +-- Ollama / Claude -->  Note Enhancement
+                                      |
+                                      +-- File I/O ----------> ./notes/*.md
 ```
 
 1. **Click "Start Recording"** in the browser
