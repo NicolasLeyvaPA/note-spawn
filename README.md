@@ -14,7 +14,11 @@ You can't deeply engage with a concept and transcribe it at the same time. Your 
 
 ## What It Does
 
-NoteSpawn records your lecture, transcribes it in real-time using OpenAI Whisper (fully offline, on your machine), and optionally uses AI to structure the raw transcript into clean, organized notes. You sit back, engage with the material, ask questions, and walk out with perfect notes you never had to write.
+You open NoteSpawn in your browser, hit record, and put your laptop to the side. That's it. While you're actually engaging with the lecture — asking questions, following the reasoning, building intuition — Whisper is running locally on your machine turning speech into text in real-time. No cloud, no API calls, no internet required for the transcription itself. It all happens on your hardware.
+
+But raw transcription isn't enough. Professors go on tangents, repeat themselves, mumble through transitions, and your mic won't catch every word. So after each chunk of audio is transcribed, an AI layer (either Ollama running locally for free, or Claude via API) takes that messy raw text and restructures it — filling in gaps where the mic dropped words, organizing scattered points into key concepts and details, and flagging things that need clarification. The result reads like notes a top student would write, except nobody had to write them.
+
+At the end of the session, everything gets compiled into clean Markdown files: structured notes and the raw transcript side by side, with a full summary of the lecture. You walk out of class having actually *learned* something, and the notes are already waiting for you.
 
 ## How It Works
 
@@ -26,11 +30,11 @@ Browser (UI)  <-- Socket.IO -->  Flask Server  <-- Whisper -->  Transcription
                                       +-- File I/O ----------> ./notes/*.md
 ```
 
-1. **Click "Start Recording"** in the browser
-2. Whisper transcribes audio in chunks (configurable: 30-120 seconds)
-3. Each chunk is optionally enhanced by AI into structured notes (key concepts, details, questions)
-4. At the end, a full summary is generated
-5. Everything is saved as clean Markdown files
+1. Hit **Start Recording** — audio streams to the Flask backend via your mic
+2. Every 30-120 seconds (your choice), Whisper transcribes the latest chunk
+3. AI enhances the raw transcript — structures it, fills gaps, organizes key ideas
+4. Notes appear in real-time in the browser as each chunk is processed
+5. When you stop, a full summary is generated and everything is saved as Markdown
 
 ## Features
 
