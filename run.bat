@@ -11,8 +11,11 @@ echo.
 REM Check for Python
 py --version >nul 2>&1
 if %errorlevel% neq 0 (
-    echo ERROR: Python not found. Install from python.org
-    echo Make sure to check "Add Python to PATH" during install
+    echo ERROR: Python not found.
+    echo.
+    echo   Download: https://www.python.org/downloads/
+    echo   IMPORTANT: Check "Add Python to PATH" during installation.
+    echo   After installing, restart this terminal and try again.
     pause
     exit /b 1
 )
@@ -25,17 +28,22 @@ REM Check for FFmpeg
 ffmpeg -version >nul 2>&1
 if %errorlevel% neq 0 (
     echo.
-    echo WARNING: FFmpeg not found. Whisper needs it.
-    echo Install with: winget install ffmpeg
-    echo Or download from: https://ffmpeg.org/download.html
+    echo WARNING: FFmpeg not found ^(required by Whisper for audio processing^).
+    echo.
+    echo   Option 1: winget install ffmpeg
+    echo   Option 2: https://ffmpeg.org/download.html
+    echo   After installing, restart this terminal.
     echo.
 )
 
 REM Check API key
 if "%ANTHROPIC_API_KEY%"=="" (
     echo.
-    echo NOTE: ANTHROPIC_API_KEY not set - AI enhancement disabled
-    echo To enable, run: set ANTHROPIC_API_KEY=sk-ant-your-key-here
+    echo NOTE: No AI enhancement configured. Transcription still works.
+    echo.
+    echo   For free local AI:  Install Ollama from https://ollama.com
+    echo                       Then run: ollama pull llama3.2
+    echo   For Claude AI:      set ANTHROPIC_API_KEY=your-key-here
     echo.
 )
 
