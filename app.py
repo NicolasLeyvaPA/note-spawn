@@ -67,7 +67,8 @@ except:
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'lecture-notes'
-socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
+CORS_ORIGINS = os.getenv('CORS_ORIGINS', 'http://localhost:5000').split(',')
+socketio = SocketIO(app, cors_allowed_origins=CORS_ORIGINS, async_mode='threading')
 
 # Audio constants
 SAMPLE_RATE = 16000       # Hz — required by Whisper
