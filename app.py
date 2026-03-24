@@ -69,6 +69,11 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'lecture-notes'
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
+# Audio constants
+SAMPLE_RATE = 16000       # Hz — required by Whisper
+AUDIO_CHANNELS = 1        # Mono recording
+AUDIO_BLOCK_DURATION = 0.5  # Seconds per audio callback block
+
 # State
 recorder = None
 session_active = False
@@ -1234,7 +1239,7 @@ HTML_PAGE = '''<!DOCTYPE html>
 
 # ============== AUDIO RECORDER ==============
 class AudioRecorder:
-    def __init__(self, sample_rate=16000, channels=1, device=None):
+    def __init__(self, sample_rate=SAMPLE_RATE, channels=AUDIO_CHANNELS, device=None):
         self.sample_rate = sample_rate
         self.channels = channels
         self.device = device
@@ -1250,7 +1255,7 @@ class AudioRecorder:
         self.is_recording = True
         self.stream = sd.InputStream(
             samplerate=self.sample_rate, channels=self.channels, dtype=np.float32,
-            callback=self.callback, blocksize=int(self.sample_rate * 0.5),
+            callback=self.callback, blocksize=int(self.sample_rate * AUDIO_BLOCK_DURATION),
             device=self.device if self.device != -1 else None
         )
         self.stream.start()
